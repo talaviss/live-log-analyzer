@@ -1,7 +1,7 @@
 import time
 from threading import Thread
 from pymongo import Connection
-from pymongo.errors import CollectionInvalid, InvalidStringData
+from pymongo.errors import CollectionInvalid, InvalidStringData, OperationFailure
 from debuglogging import error
 from settings import MONGODB_NAME, MAX_COLLECTION_SIZE, SOURCES_SETTINGS
 
@@ -42,6 +42,8 @@ class SourceExecutive(object):
                 self.collection, capped=True,
                 size=MAX_COLLECTION_SIZE * 1048576)
         except CollectionInvalid:
+            self.mongo = db[self.collection]
+        except OperationFailure:
             self.mongo = db[self.collection]
 
     def store_data(self):
